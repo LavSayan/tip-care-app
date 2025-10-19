@@ -1,9 +1,23 @@
-import {View, Text, TextInput, TouchableOpacity, Image} from "react-native";
+import {View, Text, TextInput, TouchableOpacity, Image, Alert} from "react-native";
 import {Link, router} from "expo-router";
 import {useState} from "react";
+import {setLoggedIn} from "@/app/utils/authStorage";
+import {replace} from "expo-router/build/global-state/routing";
 
 export default function LoginScreen() {
-    const [loading, setLoading] = useState(true);
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleLogin = async () => {
+        if(username && password){
+            await setLoggedIn(true);
+            router.replace("/(tabs)");
+        } else {
+            Alert.alert("Username and password are required!");
+        }
+    }
+
     return (
         <View className="flex-1 justify-center items-center bg-blue-100 p-6">
             <View className="flex-row items-center justify-around mb-6">
@@ -26,42 +40,42 @@ export default function LoginScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View>
-                    <View className="mb-2">
-                        <Text>Username</Text>
-                    </View>
-                    <View>
-                        <View className="bg-gray-200 border-black border rounded-xl py-2 px-3 mb-4">
+                <View className="self-stretch px-6">
+                    <View className="mb-4">
+                        <Text className="mb-1">Username</Text>
+                        <View className="bg-gray-200 border border-black rounded-xl px-3">
                             <TextInput
-                                className="text-[15px]"
-                                placeholder="Enter your username                                 "
+                                className="text-[15px] py-2 w-full"
+                                placeholder="Enter your username"
                                 placeholderTextColor="gray"
-
+                                value={username}
+                                onChangeText={setUsername}
+                            />
+                        </View>
+                    </View>
+                </View>
+                <View className="self-stretch px-6">
+                    <View className="mb-8">
+                        <Text className="mb-1">Password</Text>
+                        <View className="bg-gray-200 border border-black rounded-xl px-3">
+                            <TextInput
+                                className="text-[15px] py-2 w-full"
+                                placeholder="Enter your password"
+                                placeholderTextColor="gray"
+                                secureTextEntry={true}
+                                value={password}
+                                onChangeText={setPassword}
                             />
                         </View>
                     </View>
                 </View>
                 <View>
-                    <View className="mb-2">
-                        <Text>Password</Text>
-                    </View>
-                    <View>
-                        <View className="bg-gray-200 border-black border rounded-xl py-2 px-3 mb-8">
-                            <TextInput
-                                className="text-[15px]"
-                                placeholder="Enter your password                                 "
-                                placeholderTextColor="gray"
-                            />
-                        </View>
-                    </View>
-                </View>
-                <View>
-                    <TouchableOpacity onPress={() => router.push("/(tabs)")}
+                    <TouchableOpacity onPress={handleLogin}
                                       className="bg-[#0077CC] py-2 px-20 rounded-xl w-full mb-3">
                         <Text className="text-white font-semibold text-[17px]">Log In</Text>
                     </TouchableOpacity>
                 </View>
-                <View className="flex-row items-center justify-around mb-2">
+                <View className="flex-row items-center justify-around mb-6">
                     <View>
                         <Text>Don't have an account? </Text>
                     </View>

@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0cbdc3f4-7e13-4f7a-ad14-dbe211fb6a58" name="Changes" comment="SPLASHSCREEN UPDATE">
+    <list default="true" id="0cbdc3f4-7e13-4f7a-ad14-dbe211fb6a58" name="Changes" comment="MOOD TRACKER FEATURE UPDATE">
+      <change afterPath="$PROJECT_DIR$/app/utils/authStorage.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/check.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/close.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/mood.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/mood.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/login.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/signup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/signup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(tabs)/journal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/journal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/SplashScreen.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,10 +90,10 @@
       <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\assets\icons" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\assets\icons" />
       <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\app\register" />
       <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\app" />
       <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\app\(screens)" />
-      <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\assets\icons" />
       <recent name="C:\Users\earlc\WebstormProjects\tip-care-app\assets\images" />
     </key>
   </component>
@@ -107,7 +114,7 @@
       <workItem from="1760374907279" duration="48436000" />
       <workItem from="1760570620715" duration="14255000" />
       <workItem from="1760585398656" duration="938000" />
-      <workItem from="1760587180994" duration="67039000" />
+      <workItem from="1760587180994" duration="83525000" />
     </task>
     <task id="LOCAL-00001" summary="First progress react native TIP care app">
       <option name="closed" value="true" />
@@ -173,7 +180,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760763175020</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="MOOD TRACKER FEATURE UPDATE">
+      <option name="closed" value="true" />
+      <created>1760773444585</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1760773444585</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -188,6 +203,7 @@
     <MESSAGE value="JOURNAL AND CLINICS PAGE UI UPDATE" />
     <MESSAGE value="LOGIN AND SIGNUP UI UPDATE" />
     <MESSAGE value="SPLASHSCREEN UPDATE" />
-    <option name="LAST_COMMIT_MESSAGE" value="SPLASHSCREEN UPDATE" />
+    <MESSAGE value="MOOD TRACKER FEATURE UPDATE" />
+    <option name="LAST_COMMIT_MESSAGE" value="MOOD TRACKER FEATURE UPDATE" />
   </component>
 </project>

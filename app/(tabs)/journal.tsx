@@ -1,7 +1,20 @@
-import {View, Text, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {View, Text, TouchableOpacity, Image, ScrollView, Modal, Alert} from 'react-native';
 import SearchBar from "@/components/SearchBar";
+import {useState} from "react";
 
 const Journal = () => {
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const today = new Date();
+
+    const dateToday = today.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+
     return (
         <View className="flex-1 bg-blue-100">
             <View
@@ -42,6 +55,7 @@ const Journal = () => {
                     placeholder="Search entries"
                 />
                 <TouchableOpacity
+                    onPress={() => setModalVisible(true)}
                     className="bg-[#0077CC] rounded-full py-3 items-center mt-5">
                     <View className="flex-row items-center">
                         <Image
@@ -67,24 +81,24 @@ const Journal = () => {
                                 <Text className="text-[#0077CC] font-semibold text-[20px]">
                                     MIDTERM EXAM WEEK</Text>
                             </View>
-                                <TouchableOpacity>
-                                    <View>
-                                        <Image
-                                            source={require("@/assets/icons/note.png")}
-                                            className="w-7 h-7 mr-2 ml-16"
-                                            resizeMode="contain"
-                                        />
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <View>
-                                        <Image
-                                            source={require("@/assets/icons/trash.png")}
-                                            className="w-7 h-7 mr-2"
-                                            resizeMode="contain"
-                                        />
-                                    </View>
-                                </TouchableOpacity>
+                            <TouchableOpacity>
+                                <View>
+                                    <Image
+                                        source={require("@/assets/icons/note.png")}
+                                        className="w-7 h-7 mr-2 ml-16"
+                                        resizeMode="contain"
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <View>
+                                    <Image
+                                        source={require("@/assets/icons/trash.png")}
+                                        className="w-7 h-7 mr-2"
+                                        resizeMode="contain"
+                                    />
+                                </View>
+                            </TouchableOpacity>
                         </View>
 
                         <View
@@ -105,6 +119,62 @@ const Journal = () => {
                         </Text>
                     </TouchableOpacity>
                 </ScrollView>
+
+                <Modal animationType="slide"
+                       transparent={true}
+                       visible={modalVisible}
+                       onRequestClose={() => {
+                           setModalVisible(!modalVisible);
+                       }}
+                >
+                    <View className="flex-1 bg-blue-100">
+                        <View
+                            className="bg-[#E6F0FA] rounded-b-3xl px-6 pt-12 pb-6 flex-row justify-between items-center shadow-sm mt-0.5">
+                            <View className="mt-4">
+                                <View className="flex-row items-center">
+                                    <View>
+                                        <View className="mr-4">
+                                            <TouchableOpacity
+                                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow"
+                                                onPress={()=> setModalVisible(false)}>
+                                                <Image
+                                                    source={require("@/assets/icons/close.png")}
+                                                    className="w-9 h-9 p-2"
+                                                    resizeMode="contain"
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                    <View>
+                                        <View>
+                                            <Text className="text-2xl font-extrabold text-[#0077CC]">New Note</Text>
+                                            <Text className="text-sm text-gray-600 mt-1">{dateToday}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+
+                            <TouchableOpacity
+                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
+                                <Image
+                                    source={require("@/assets/icons/trash.png")}
+                                    className="w-9 h-9 p-1"
+                                    resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
+                                <Image
+                                    source={require("@/assets/icons/check.png")}
+                                    className="w-9 h-9 p-1"
+                                    resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+                </Modal>
+
             </View>
         </View>
     )

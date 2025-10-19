@@ -26,7 +26,7 @@ export default function LoginScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View>
+                <View className="self-stretch px-6">
                     <View className="mb-2">
                         <Text>Full Name</Text>
                     </View>
@@ -41,7 +41,7 @@ export default function LoginScreen() {
                         </View>
                     </View>
                 </View>
-                <View>
+                <View className="self-stretch px-6">
                     <View className="mb-2">
                         <Text>Username</Text>
                     </View>
@@ -49,13 +49,13 @@ export default function LoginScreen() {
                         <View className="bg-gray-200 border-black border rounded-xl py-2 px-3 mb-4">
                             <TextInput
                                 className="text-[15px]"
-                                placeholder="Enter your username                                 "
+                                placeholder="Enter your username                                  "
                                 placeholderTextColor="gray"
                             />
                         </View>
                     </View>
                 </View>
-                <View>
+                <View className="self-stretch px-6">
                     <View className="mb-2">
                         <Text>Password</Text>
                     </View>
@@ -65,6 +65,7 @@ export default function LoginScreen() {
                                 className="text-[15px]"
                                 placeholder="Enter your password                                 "
                                 placeholderTextColor="gray"
+                                secureTextEntry={true}
                             />
                         </View>
                     </View>
@@ -74,7 +75,7 @@ export default function LoginScreen() {
                         <Text className="text-white font-semibold text-[17px]">Sign Up</Text>
                     </TouchableOpacity>
                 </View>
-                <View className="flex-row items-center justify-around mb-2">
+                <View className="flex-row items-center justify-around mb-6">
                     <View>
                         <Text>Already have an account? </Text>
                     </View>
