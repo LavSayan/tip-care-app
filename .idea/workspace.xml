@@ -5,17 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0cbdc3f4-7e13-4f7a-ad14-dbe211fb6a58" name="Changes" comment="MOOD TRACKER FEATURE UPDATE">
-      <change afterPath="$PROJECT_DIR$/app/utils/authStorage.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons/check.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons/close.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/login.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(auth)/signup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/signup.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/journal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/journal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/SplashScreen.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +107,18 @@
       <workItem from="1760570620715" duration="14255000" />
       <workItem from="1760585398656" duration="938000" />
       <workItem from="1760587180994" duration="83525000" />
+      <workItem from="1760931526714" duration="115000" />
+      <workItem from="1760931673737" duration="2306000" />
+      <workItem from="1760934030089" duration="1924000" />
+      <workItem from="1760965135924" duration="17000" />
+      <workItem from="1760968574515" duration="630000" />
+      <workItem from="1761010179545" duration="1401000" />
+      <workItem from="1761092668909" duration="247000" />
+      <workItem from="1761093003998" duration="87000" />
+      <workItem from="1761214773492" duration="75000" />
+      <workItem from="1761215349716" duration="50000" />
+      <workItem from="1761231576560" duration="1169000" />
+      <workItem from="1761373814156" duration="216000" />
     </task>
     <task id="LOCAL-00001" summary="First progress react native TIP care app">
       <option name="closed" value="true" />
@@ -193,6 +197,29 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First progress react native TIP care app" />
