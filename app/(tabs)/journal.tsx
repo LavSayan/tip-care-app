@@ -1,104 +1,211 @@
-import SearchBar from "@/components/SearchBar";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Image, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Easing, Image, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Circle, Svg } from 'react-native-svg';
 
-type Entry = {
-    title: string;
-    content: string;
-    date: string;
-};
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const Journal = () => {
+const Relax = () => {
     const router = useRouter();
-    
-    const [modalVisible, setModalVisible] = useState(false);
-    const [entries, setEntries] = useState<Entry[]>([]);
-    const [entryText, setEntryText] = useState("");
-    const [entryTitle, setEntryTitle] = useState("");
-    const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [searchQuery, setSearchQuery] = useState("");
+    // user-selectable total seconds (default 3 minutes)
+    const [totalSeconds, setTotalSeconds] = useState(180);
+    const [isActive, setIsActive] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(totalSeconds);
+    const [breatheText, setBreatheText] = useState("Press Start");
 
-    const today = new Date();
-    const dateToday = today.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+    // show/hide duration picker modal
+    const [showPicker, setShowPicker] = useState(false);
+
+    // progress drives the circular progress ring (0 -> 1 over totalSeconds)
+    const progress = useRef(new Animated.Value(0)).current;
+    // pulse drives the breathing pulse animation (scale)
+    const pulse = useRef(new Animated.Value(0)).current;
+
+    // refs to hold running animations / timer so we can stop them
+    const progressAnimRef = useRef<any>(null);
+    const pulseAnimRef = useRef<any>(null);
+    const timerRef = useRef<any>(null);
+
+    // circle config
+    const radius = 90;
+    const strokeWidth = 6;
+    const diameter = radius * 2;
+    const circumference = 2 * Math.PI * radius;
+
+    const DURATION_OPTIONS = [
+        { secs: 180, label: "3 minutes" },
+        { secs: 360, label: "6 minutes" },
+        { secs: 540, label: "9 minutes" },
+        { secs: 720, label: "12 minutes" },
+    ];
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
+    useEffect(() => {
+        // whenever totalSeconds changes ensure timeLeft follows when idle
+        if (!isActive) {
+            setTimeLeft(totalSeconds);
+        }
+    }, [totalSeconds]);
+
+    useEffect(() => {
+        // Update breathe text based on where we are in the 12s breathing cycle
+        if (!isActive) return;
+        const elapsed = totalSeconds - timeLeft;
+        const cyclePos = elapsed % 12; // 0..11.999...
+        if (cyclePos < 4) {
+            setBreatheText("Breathe In");
+        } else if (cyclePos < 8) {
+            setBreatheText("Hold");
+        } else {
+            setBreatheText("Breathe Out");
+        }
+    }, [timeLeft, isActive, totalSeconds]);
+
+    const stopAll = () => {
+        try {
+            progressAnimRef.current?.stop?.();
+        } catch {}
+        try {
+            pulseAnimRef.current?.stop?.();
+        } catch {}
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+    };
+
+    const startPulseAnimation = () => {
+        pulse.setValue(0);
+        const loop = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulse, {
+                    toValue: 1,
+                    duration: 4000,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulse, {
+                    toValue: 0.9,
+                    duration: 4000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulse, {
+                    toValue: 0,
+                    duration: 4000,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+        pulseAnimRef.current = loop;
+        loop.start();
+    };
+
+    const startBreathing = (force = false) => {
+        if (isActive && !force) return;
+        stopAll();
+        setIsActive(true);
+        setTimeLeft(totalSeconds);
+        setBreatheText("Breathe In");
+
+        // reset and start progress animation (fills/empties over totalSeconds)
+        progress.setValue(0);
+        const progAnim = Animated.timing(progress, {
+            toValue: 1,
+            duration: totalSeconds * 1000,
+            easing: Easing.linear,
+            useNativeDriver: false, // strokeDashoffset cannot use native driver
+        });
+        progressAnimRef.current = progAnim;
+        progAnim.start(({ finished }) => {
+            if (finished) {
+                setIsActive(false);
+                setBreatheText("Complete! Press Start to begin again");
+                stopAll();
+            }
+        });
+
+        // start the pulsing circle animation
+        startPulseAnimation();
+
+        // start countdown timer
+        timerRef.current = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    if (timerRef.current) {
+                        clearInterval(timerRef.current);
+                        timerRef.current = null;
+                    }
+                    stopAll();
+                    setIsActive(false);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    };
+
+    // STOP and reset to idle state (do NOT restart)
+    const stopAndReset = () => {
+        stopAll();
+        progress.setValue(0);
+        pulse.setValue(0);
+        progressAnimRef.current = null;
+        pulseAnimRef.current = null;
+        setIsActive(false);
+        setTimeLeft(totalSeconds);
+        setBreatheText("Press Start");
+    };
+
+    // user selects a duration from picker
+    const onSelectDuration = (secs: number) => {
+        // stop any running session and apply new duration
+        stopAndReset();
+        setTotalSeconds(secs);
+        setShowPicker(false);
+    };
+
+    const strokeDashoffset = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, circumference], // will animate the ring "drawing" / "erasing"
     });
 
-    const openNewEntry = () => {
-        setEntryText("");
-        setEntryTitle("");
-        setEditingIndex(null);
-        setModalVisible(true);
-    };
-
-    const openEditEntry = (index: number) => {
-        const entry = entries[index];
-        setEntryText(entry.content);
-        setEntryTitle(entry.title);
-        setEditingIndex(index);
-        setModalVisible(true);
-    };
-
-    const saveEntry = () => {
-        if (!entryText.trim()) return;
-
-        const newEntry: Entry = {
-            title: entryTitle.trim() || `Journal Entry #${entries.length + 1}`,
-            content: entryText.trim(),
-            date: dateToday,
-        };
-
-        if (editingIndex !== null) {
-            const updated = [...entries];
-            updated[editingIndex] = newEntry;
-            setEntries(updated);
-        } else {
-            setEntries((prev) => [...prev, newEntry]);
-        }
-
-        setEntryText("");
-        setEntryTitle("");
-        setEditingIndex(null);
-        setModalVisible(false);
-    };
-
-    const deleteEntry = () => {
-        if (editingIndex !== null) {
-            const updated = [...entries];
-            updated.splice(editingIndex, 1);
-            setEntries(updated);
-        }
-        setEntryText("");
-        setEntryTitle("");
-        setEditingIndex(null);
-        setModalVisible(false);
-    };
-
-    const filteredEntries = entries.filter(
-        (entry) =>
-            entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            entry.content.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // pulse scale interpolation (slight scale around 1)
+    const scale = pulse.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 1.15],
+    });
 
     return (
-        <View className="flex-1 bg-blue-100">
-            <View className="bg-[#E6F0FA] rounded-b-3xl px-6 pt-12 pb-6 flex-row justify-between items-center shadow-sm mt-0.5">
-                <View className="mt-4 flex-row items-center">
-                    <Image
-                        source={require("@/assets/icons/heart.png")}
-                        className="w-10 h-10 mr-2"
-                        resizeMode="contain"
-                        tintColor="#0077CC"
-                    />
-                    <View>
-                        <Text className="text-2xl font-extrabold text-[#0077CC]">Personal Journal</Text>
-                        <Text className="text-sm text-gray-600 mt-1">Your private space for reflection</Text>
+        <View className="flex-1 bg-white">
+            <View
+                className="bg-[#E6F0FA] rounded-b-3xl px-6 pt-12 pb-6 flex-row justify-between items-center shadow-sm mt-0.5">
+                <View className="mt-4">
+                    <View className="flex-row items-center">
+                        <View>
+                            <View className="mr-2">
+                                <Image
+                                    source={require("@/assets/icons/heart.png")}
+                                    className="w-10 h-10"
+                                    resizeMode="contain"
+                                    tintColor="#0077CC"
+                                />
+                            </View>
+                        </View>
+                        <View>
+                            <View>
+                                <Text className="text-2xl font-extrabold text-[#0077CC]">Relaxation</Text>
+                                <Text className="text-sm text-gray-600 mt-1">Take a moment to breathe and relax</Text>
+                            </View>
+                        </View>
                     </View>
                 </View>
-                
+
                 <TouchableOpacity
                     onPress={() => router.push("/(profile)/profile")}
                     className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
@@ -109,147 +216,120 @@ const Journal = () => {
                         tintColor="#0077CC"
                     />
                 </TouchableOpacity>
-
             </View>
-            <View className="p-5">
-                <SearchBar
-                    placeholder="Search entries"
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
-                <TouchableOpacity
-                    onPress={openNewEntry}
-                    className="bg-[#0077CC] rounded-full py-3 items-center mt-5"
+
+            <View className="flex-1 items-center justify-center">
+                {/* More visible, tappable timer indicator with hint */}
+                <Pressable
+                    onPress={() => setShowPicker(true)}
+                    style={{
+                        alignItems: 'center',
+                        marginBottom: 12,
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Change duration"
                 >
-                    <View className="flex-row items-center">
-                        <Image
-                            source={require("@/assets/icons/plus.png")}
-                            className="w-5 h-5 mr-2"
-                            resizeMode="contain"
-                            tintColor="#FFFFFF"
-                        />
-                        <Text className="text-white font-semibold text-sm">New Entry</Text>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            backgroundColor: '#EFF8FF',
+                            borderColor: '#CDE7FF',
+                            borderWidth: 1,
+                            paddingVertical: 10,
+                            paddingHorizontal: 18,
+                            borderRadius: 22,
+                            shadowColor: '#000',
+                            shadowOpacity: 0.06,
+                            shadowRadius: 6,
+                            elevation: 2,
+                        }}
+                    >
+                        <Text style={{ fontSize: 18, marginRight: 10 }}>⏱️</Text>
+                        <Text style={{ fontSize: 20, fontWeight: '700', color: '#0B66A1' }}>
+                            {formatTime(timeLeft)}
+                        </Text>
                     </View>
-                </TouchableOpacity>
-                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-                    {filteredEntries.map((entry, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            onPress={() => {
-                                const originalIndex = entries.findIndex(
-                                    (e) => e.title === entry.title && e.content === entry.content && e.date === entry.date
-                                );
-                                openEditEntry(originalIndex);
-                            }}
+                    <Text style={{ marginTop: 6, fontSize: 12, color: '#6B7280' }}>
+                        Tap to change duration
+                    </Text>
+                </Pressable>
 
-                            className="bg-white rounded-2xl p-4 mt-5"
-                        >
-                            <View className="flex-row items-center justify-between">
-                                <Text className="text-[#0077CC] font-semibold text-[18px]">{entry.title}</Text>
-                                <Image
-                                    source={require("@/assets/icons/note.png")}
-                                    className="w-6 h-6"
-                                    resizeMode="contain"
-                                />
-                            </View>
-                            <View className="flex-row items-center mt-2 mb-4">
-                                <Image
-                                    source={require("@/assets/icons/calendar.png")}
-                                    className="w-5 h-5 mr-2"
-                                    resizeMode="contain"
-                                    tintColor="gray"
-                                />
-                                <Text className="text-gray-500 text-sm">{entry.date}</Text>
-                            </View>
-                            <Text className="text-gray-600 text-sm" numberOfLines={3}>
-                                {entry.content}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    className="flex-1 bg-blue-100"
+                <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 20 }}>
+                    {/* Circular progress ring (outline) */}
+                    <Svg width={diameter + strokeWidth * 2} height={diameter + strokeWidth * 2}>
+                        <Circle
+                            cx={(diameter + strokeWidth * 2) / 2}
+                            cy={(diameter + strokeWidth * 2) / 2}
+                            r={radius}
+                            stroke="#E0E7EF"
+                            strokeWidth={strokeWidth}
+                            fill="none"
+                        />
+                        <AnimatedCircle
+                            cx={(diameter + strokeWidth * 2) / 2}
+                            cy={(diameter + strokeWidth * 2) / 2}
+                            r={radius}
+                            stroke="#0077CC"
+                            strokeWidth={strokeWidth}
+                            strokeLinecap="round"
+                            fill="none"
+                            strokeDasharray={`${circumference} ${circumference}`}
+                            strokeDashoffset={strokeDashoffset}
+                            rotation="-90"
+                            originX={(diameter + strokeWidth * 2) / 2}
+                            originY={(diameter + strokeWidth * 2) / 2}
+                        />
+                    </Svg>
+
+                    {/* Pulsing outline center (not filled) */}
+                    <Animated.View
+                        style={{
+                            position: 'absolute',
+                            width: 160,
+                            height: 160,
+                            borderRadius: 80,
+                            borderWidth: 6,
+                            borderColor: '#E6F0FA',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            transform: [{ scale }],
+                        }}
+                    >
+                        <Text style={{ color: '#334155', fontSize: 18, fontWeight: '600' }}>
+                            {breatheText}
+                        </Text>
+                    </Animated.View>
+                </View>
+
+                <TouchableOpacity
+                    onPress={() => { if (isActive) stopAndReset(); else startBreathing(); }}
+                    className={`px-8 py-4 rounded-full ${isActive ? 'bg-red-500' : 'bg-[#0077CC]'}`}
                 >
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-                        <View className="bg-[#E6F0FA] rounded-b-3xl px-6 pt-12 pb-6 flex-row justify-between items-center shadow-sm">
-                            <View className="flex-row items-center">
-                                <TouchableOpacity
-                                    className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mr-4"
-                                    onPress={() => setModalVisible(false)}
-                                >
-                                    <Image
-                                        source={require("@/assets/icons/close.png")}
-                                        className="w-6 h-6"
-                                        resizeMode="contain"
-                                    />
-                                </TouchableOpacity>
-                                <View>
-                                    <Text className="text-2xl font-extrabold text-[#0077CC]">
-                                        {editingIndex !== null ? "Edit Note" : "New Note"}
-                                    </Text>
-                                    <Text className="text-sm text-gray-600 mt-1">{dateToday}</Text>
-                                </View>
-                            </View>
+                    <Text className="text-white font-bold text-lg">
+                        {isActive ? 'Stop' : 'Start'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
-                            {editingIndex !== null && (
-                                <TouchableOpacity
-                                    className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4"
-                                    onPress={deleteEntry}
-                                >
-                                    <Image
-                                        source={require("@/assets/icons/trash.png")}
-                                        className="w-6 h-6"
-                                        resizeMode="contain"
-                                    />
-                                </TouchableOpacity>
-                            )}
-                            <TouchableOpacity
-                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4"
-                                onPress={saveEntry}
-                            >
-                                <Image
-                                    source={require("@/assets/icons/check.png")}
-                                    className="w-6 h-6"
-                                    resizeMode="contain"
-                                />
+            {/* Duration picker modal */}
+            <Modal visible={showPicker} transparent animationType="fade" onRequestClose={() => setShowPicker(false)}>
+                <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' }} onPress={() => setShowPicker(false)}>
+                    <Pressable style={{ width: 280, backgroundColor: 'white', borderRadius: 12, padding: 12 }} onPress={() => {}}>
+                        <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 8 }}>Choose duration</Text>
+                        {DURATION_OPTIONS.map(opt => (
+                            <TouchableOpacity key={opt.secs} onPress={() => onSelectDuration(opt.secs)} style={{ paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' }}>
+                                <Text style={{ fontSize: 16 }}>{opt.label}</Text>
                             </TouchableOpacity>
-                        </View>
-
-                        <View className="px-6 mt-6">
-                            <Text className="text-gray-700 mb-2 font-semibold">Title:</Text>
-                            <View className="bg-white rounded-xl p-3 shadow mb-4">
-                                <TextInput
-                                    placeholder="Entry title"
-                                    value={entryTitle}
-                                    onChangeText={setEntryTitle}
-                                    className="text-gray-800 text-base"
-                                />
-                            </View>
-
-                            <Text className="text-gray-700 mb-2 font-semibold">Your thoughts:</Text>
-                            <View className="bg-white rounded-xl p-4 shadow">
-                                <TextInput
-                                    multiline
-                                    placeholder="Write your journal entry here..."
-                                    value={entryText}
-                                    onChangeText={setEntryText}
-                                    className="text-gray-800 text-base"
-                                    style={{ minHeight: 120, textAlignVertical: "top" }}
-                                />
-                            </View>
-                        </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                        ))}
+                        <TouchableOpacity onPress={() => setShowPicker(false)} style={{ marginTop: 10, paddingVertical: 10, alignItems: 'center' }}>
+                            <Text style={{ color: '#0077CC', fontWeight: '600' }}>Cancel</Text>
+                        </TouchableOpacity>
+                    </Pressable>
+                </Pressable>
             </Modal>
         </View>
-    )
-}
-export default Journal;
+    );
+};
+
+export default Relax;
