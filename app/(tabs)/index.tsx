@@ -1,6 +1,7 @@
-import { useRouter } from "expo-router";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { logout } from ".././utils/authStorage";
+import {View, Text, Image, TouchableOpacity, ScrollView, Modal} from "react-native";
+import {useRouter} from "expo-router";
+import {logout} from ".././utils/authStorage";
+import {useState} from "react";
 
 const Index = () => {
     const router = useRouter();
@@ -18,6 +19,8 @@ const Index = () => {
         await logout();
         router.replace("/(auth)/login");
     };
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <View className="flex-1 bg-blue-100">
@@ -45,7 +48,9 @@ const Index = () => {
                 </View>
 
                 <TouchableOpacity
-                    onPress={() => router.push("/(profile)/profile")}
+                    onPress={() => {
+                        setModalVisible(true)
+                    }}
                     className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
                     <Image
                         source={require("@/assets/icons/profile.png")}
@@ -203,6 +208,73 @@ const Index = () => {
                     </View>
                 </View>
             </ScrollView>
+            <Modal animationType="slide"
+                   transparent={true}
+                   visible={modalVisible}
+                   onRequestClose={() => {
+                       setModalVisible(!modalVisible);
+                   }}
+            >
+                <View className="flex-1 bg-blue-100">
+                    <View className="bg-[#0077CC] pt-12 flex-row">
+                        <View className="p-4">
+                            <TouchableOpacity
+                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow"
+                                onPress={() => setModalVisible(false)}>
+                                <Image
+                                    source={require("@/assets/icons/close.png")}
+                                    className="w-9 h-9 p-2"
+                                    resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View className="justify-center w-full">
+                            <Text className="text-white text-xl font-extrabold">PROFILE</Text>
+                        </View>
+                    </View>
+
+                    <View className="flex-row justify-center">
+                        <View className="flex-1 bg-blue-100 px-6 pt-12">
+                            <View className="items-center mb-6">
+                                <Image
+                                    source={require("@/assets/icons/profile.png")}
+                                    className="w-24 h-24 rounded-full mb-4"
+                                    resizeMode="contain"
+                                    tintColor="#0077CC"
+                                />
+                                <Text className="text-2xl font-extrabold text-[#0077CC]">Luis Guirit</Text>
+                                <Text className="text-sm text-gray-600 mt-1">luis@example.com</Text>
+                                <Text className="text-xs text-gray-500 mt-1">Member since March 2024</Text>
+                            </View>
+
+                            {/* Info Card */}
+                            <View className="bg-white rounded-xl p-5 shadow space-y-4 mb-6">
+                                <View>
+                                    <Text className="text-gray-700 font-semibold">Phone Number</Text>
+                                    <Text className="text-gray-500">+63 912 345 6789</Text>
+                                </View>
+
+                                <View>
+                                    <Text className="text-gray-700 font-semibold">Location</Text>
+                                    <Text className="text-gray-500">Taytay, Rizal, Philippines</Text>
+                                </View>
+
+                                <View>
+                                    <Text className="text-gray-700 font-semibold">Account Status</Text>
+                                    <Text className="text-green-600 font-semibold">Active</Text>
+                                </View>
+                            </View>
+
+                            <TouchableOpacity
+                                onPress={handleLogout}
+                                className="bg-red-500 rounded-full py-3 items-center"
+                            >
+                                <Text className="text-white font-bold">Logout</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
