@@ -208,11 +208,6 @@ const Journal = () => {
                                 <Text className="text-[#0077CC] font-semibold text-[18px]">
                                     {entry.title}
                                 </Text>
-                                <Image
-                                    source={require("@/assets/icons/note.png")}
-                                    className="w-6 h-6"
-                                    resizeMode="contain"
-                                />
                             </View>
                             <View className="flex-row items-center mt-2 mb-4">
                                 <Image
@@ -252,7 +247,7 @@ const Journal = () => {
                                 >
                                     <Image
                                         source={require("@/assets/icons/close.png")}
-                                        className="w-6 h-6"
+                                        className="w-6 h-6 mx-3 my-3"
                                         resizeMode="contain"
                                     />
                                 </TouchableOpacity>

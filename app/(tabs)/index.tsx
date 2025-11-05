@@ -219,11 +219,12 @@ const Index = () => {
                     <View className="bg-[#0077CC] pt-12 flex-row">
                         <View className="p-4">
                             <TouchableOpacity
-                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow"
-                                onPress={() => setModalVisible(false)}>
+                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mr-4"
+                                onPress={() => setModalVisible(false)}
+                            >
                                 <Image
                                     source={require("@/assets/icons/close.png")}
-                                    className="w-9 h-9 p-2"
+                                    className="w-6 h-6 mx-3 my-3"
                                     resizeMode="contain"
                                 />
                             </TouchableOpacity>

@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0cbdc3f4-7e13-4f7a-ad14-dbe211fb6a58" name="Changes" comment="POLISH PROFILE">
+    <list default="true" id="0cbdc3f4-7e13-4f7a-ad14-dbe211fb6a58" name="Changes" comment="ASYNC STORAGE FOR JOURNAL">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/clinics.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/clinics.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/journal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/journal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/mood.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/mood.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/relax.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/relax.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,7 +121,8 @@
       <workItem from="1761373814156" duration="216000" />
       <workItem from="1762142718737" duration="1354000" />
       <workItem from="1762168138230" duration="595000" />
-      <workItem from="1762303374964" duration="5410000" />
+      <workItem from="1762303374964" duration="6438000" />
+      <workItem from="1762326822426" duration="1686000" />
     </task>
     <task id="LOCAL-00001" summary="First progress react native TIP care app">
       <option name="closed" value="true" />
@@ -217,7 +212,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762143919236</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="ASYNC STORAGE FOR JOURNAL">
+      <option name="closed" value="true" />
+      <created>1762308874081</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1762308874081</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,6 +261,7 @@
     <MESSAGE value="MOOD TRACKER FEATURE UPDATE" />
     <MESSAGE value="PACKAGE JSON CHANGES" />
     <MESSAGE value="POLISH PROFILE" />
-    <option name="LAST_COMMIT_MESSAGE" value="POLISH PROFILE" />
+    <MESSAGE value="ASYNC STORAGE FOR JOURNAL" />
+    <option name="LAST_COMMIT_MESSAGE" value="ASYNC STORAGE FOR JOURNAL" />
   </component>
 </project>
