@@ -1,9 +1,21 @@
 import SearchBar from "@/components/SearchBar";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Image, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState, useEffect } from "react";
+import {
+    Image,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Entry = {
+    id: string; // unique identifier
     title: string;
     content: string;
     date: string;
@@ -11,13 +23,49 @@ type Entry = {
 
 const Journal = () => {
     const router = useRouter();
-    
+
     const [modalVisible, setModalVisible] = useState(false);
     const [entries, setEntries] = useState<Entry[]>([]);
     const [entryText, setEntryText] = useState("");
     const [entryTitle, setEntryTitle] = useState("");
-    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const STORAGE_KEY = "@journal_entries";
+
+    // Load entries on start
+    useEffect(() => {
+        loadEntries();
+    }, []);
+
+    const loadEntries = async () => {
+        try {
+            const savedEntries = await AsyncStorage.getItem(STORAGE_KEY);
+            if (savedEntries) {
+                const parsed: Entry[] = JSON.parse(savedEntries);
+
+                // ✅ Assign new IDs if missing (fixes duplicate key warning)
+                const updated = parsed.map((entry) => ({
+                    id: entry.id || Date.now().toString() + Math.random().toString(36).substring(2, 9),
+                    title: entry.title,
+                    content: entry.content,
+                    date: entry.date,
+                }));
+
+                setEntries(updated);
+                await saveEntriesToStorage(updated); // save updated IDs back
+            }
+        } catch (error) {
+            console.error("Failed to load entries:", error);
+        }
+    };
+
+    const saveEntriesToStorage = async (entriesToSave: Entry[]) => {
+        try {
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(entriesToSave));
+        } catch (error) {
+            console.error("Failed to save entries:", error);
+        }
+    };
 
     const today = new Date();
     const dateToday = today.toLocaleDateString("en-US", {
@@ -30,50 +78,62 @@ const Journal = () => {
     const openNewEntry = () => {
         setEntryText("");
         setEntryTitle("");
-        setEditingIndex(null);
+        setEditingId(null);
         setModalVisible(true);
     };
 
-    const openEditEntry = (index: number) => {
-        const entry = entries[index];
+    const openEditEntry = (id: string) => {
+        const entry = entries.find((e) => e.id === id);
+        if (!entry) return;
         setEntryText(entry.content);
         setEntryTitle(entry.title);
-        setEditingIndex(index);
+        setEditingId(id);
         setModalVisible(true);
     };
 
     const saveEntry = () => {
         if (!entryText.trim()) return;
 
-        const newEntry: Entry = {
-            title: entryTitle.trim() || `Journal Entry #${entries.length + 1}`,
-            content: entryText.trim(),
-            date: dateToday,
-        };
-
-        if (editingIndex !== null) {
-            const updated = [...entries];
-            updated[editingIndex] = newEntry;
-            setEntries(updated);
+        let updated: Entry[] = [];
+        if (editingId) {
+            // Edit existing
+            updated = entries.map((entry) =>
+                entry.id === editingId
+                    ? {
+                        ...entry,
+                        title: entryTitle.trim() || entry.title,
+                        content: entryText.trim(),
+                        date: dateToday,
+                    }
+                    : entry
+            );
         } else {
-            setEntries((prev) => [...prev, newEntry]);
+            // Add new
+            const newEntry: Entry = {
+                id: Date.now().toString(),
+                title: entryTitle.trim() || `Journal Entry #${entries.length + 1}`,
+                content: entryText.trim(),
+                date: dateToday,
+            };
+            updated = [...entries, newEntry];
         }
 
+        setEntries(updated);
+        saveEntriesToStorage(updated);
         setEntryText("");
         setEntryTitle("");
-        setEditingIndex(null);
+        setEditingId(null);
         setModalVisible(false);
     };
 
     const deleteEntry = () => {
-        if (editingIndex !== null) {
-            const updated = [...entries];
-            updated.splice(editingIndex, 1);
-            setEntries(updated);
-        }
+        if (!editingId) return;
+        const updated = entries.filter((entry) => entry.id !== editingId);
+        setEntries(updated);
+        saveEntriesToStorage(updated);
         setEntryText("");
         setEntryTitle("");
-        setEditingIndex(null);
+        setEditingId(null);
         setModalVisible(false);
     };
 
@@ -85,6 +145,7 @@ const Journal = () => {
 
     return (
         <View className="flex-1 bg-blue-100">
+            {/* Header */}
             <View className="bg-[#E6F0FA] rounded-b-3xl px-6 pt-12 pb-6 flex-row justify-between items-center shadow-sm mt-0.5">
                 <View className="mt-4 flex-row items-center">
                     <Image
@@ -94,14 +155,16 @@ const Journal = () => {
                         tintColor="#0077CC"
                     />
                     <View>
-                        <Text className="text-2xl font-extrabold text-[#0077CC]">Personal Journal</Text>
-                        <Text className="text-sm text-gray-600 mt-1">Your private space for reflection</Text>
+                        <Text className="text-2xl font-extrabold text-[#0077CC]">
+                            Personal Journal
+                        </Text>
+                        <Text className="text-sm text-gray-600 mt-1">
+                            Your private space for reflection
+                        </Text>
                     </View>
                 </View>
-                
-                <TouchableOpacity
-                    onPress={() => router.push("/(profile)/profile")}
-                    className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
+
+                <TouchableOpacity className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
                     <Image
                         source={require("@/assets/icons/profile.png")}
                         className="w-9 h-9"
@@ -109,8 +172,9 @@ const Journal = () => {
                         tintColor="#0077CC"
                     />
                 </TouchableOpacity>
-
             </View>
+
+            {/* Search & Add */}
             <View className="p-5">
                 <SearchBar
                     placeholder="Search entries"
@@ -131,21 +195,19 @@ const Journal = () => {
                         <Text className="text-white font-semibold text-sm">New Entry</Text>
                     </View>
                 </TouchableOpacity>
-                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-                    {filteredEntries.map((entry, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            onPress={() => {
-                                const originalIndex = entries.findIndex(
-                                    (e) => e.title === entry.title && e.content === entry.content && e.date === entry.date
-                                );
-                                openEditEntry(originalIndex);
-                            }}
 
+                {/* Entries list */}
+                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                    {filteredEntries.map((entry) => (
+                        <TouchableOpacity
+                            key={entry.id}
+                            onPress={() => openEditEntry(entry.id)}
                             className="bg-white rounded-2xl p-4 mt-5"
                         >
                             <View className="flex-row items-center justify-between">
-                                <Text className="text-[#0077CC] font-semibold text-[18px]">{entry.title}</Text>
+                                <Text className="text-[#0077CC] font-semibold text-[18px]">
+                                    {entry.title}
+                                </Text>
                                 <Image
                                     source={require("@/assets/icons/note.png")}
                                     className="w-6 h-6"
@@ -168,6 +230,8 @@ const Journal = () => {
                     ))}
                 </ScrollView>
             </View>
+
+            {/* Modal */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -178,7 +242,8 @@ const Journal = () => {
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     className="flex-1 bg-blue-100"
                 >
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                        {/* Modal Header */}
                         <View className="bg-[#E6F0FA] rounded-b-3xl px-6 pt-12 pb-6 flex-row justify-between items-center shadow-sm">
                             <View className="flex-row items-center">
                                 <TouchableOpacity
@@ -193,36 +258,39 @@ const Journal = () => {
                                 </TouchableOpacity>
                                 <View>
                                     <Text className="text-2xl font-extrabold text-[#0077CC]">
-                                        {editingIndex !== null ? "Edit Note" : "New Note"}
+                                        {editingId ? "Edit Note" : "New Note"}
                                     </Text>
                                     <Text className="text-sm text-gray-600 mt-1">{dateToday}</Text>
                                 </View>
                             </View>
 
-                            {editingIndex !== null && (
+                            <View className="flex-row gap-3 mt-4">
+                                {editingId && (
+                                    <TouchableOpacity
+                                        className="w-10 h-10 rounded-full bg-white justify-center items-center shadow"
+                                        onPress={deleteEntry}
+                                    >
+                                        <Image
+                                            source={require("@/assets/icons/trash.png")}
+                                            className="w-6 h-6"
+                                            resizeMode="contain"
+                                        />
+                                    </TouchableOpacity>
+                                )}
                                 <TouchableOpacity
-                                    className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4"
-                                    onPress={deleteEntry}
+                                    className="w-10 h-10 rounded-full bg-white justify-center items-center shadow"
+                                    onPress={saveEntry}
                                 >
                                     <Image
-                                        source={require("@/assets/icons/trash.png")}
+                                        source={require("@/assets/icons/check.png")}
                                         className="w-6 h-6"
                                         resizeMode="contain"
                                     />
                                 </TouchableOpacity>
-                            )}
-                            <TouchableOpacity
-                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4"
-                                onPress={saveEntry}
-                            >
-                                <Image
-                                    source={require("@/assets/icons/check.png")}
-                                    className="w-6 h-6"
-                                    resizeMode="contain"
-                                />
-                            </TouchableOpacity>
+                            </View>
                         </View>
 
+                        {/* Form */}
                         <View className="px-6 mt-6">
                             <Text className="text-gray-700 mb-2 font-semibold">Title:</Text>
                             <View className="bg-white rounded-xl p-3 shadow mb-4">
@@ -234,7 +302,9 @@ const Journal = () => {
                                 />
                             </View>
 
-                            <Text className="text-gray-700 mb-2 font-semibold">Your thoughts:</Text>
+                            <Text className="text-gray-700 mb-2 font-semibold">
+                                Your thoughts:
+                            </Text>
                             <View className="bg-white rounded-xl p-4 shadow">
                                 <TextInput
                                     multiline
@@ -250,6 +320,7 @@ const Journal = () => {
                 </KeyboardAvoidingView>
             </Modal>
         </View>
-    )
-}
+    );
+};
+
 export default Journal;

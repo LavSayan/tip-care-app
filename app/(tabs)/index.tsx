@@ -242,8 +242,8 @@ const Index = () => {
                                     resizeMode="contain"
                                     tintColor="#0077CC"
                                 />
-                                <Text className="text-2xl font-extrabold text-[#0077CC]">Luis Guirit</Text>
-                                <Text className="text-sm text-gray-600 mt-1">luis@example.com</Text>
+                                <Text className="text-2xl font-extrabold text-[#0077CC]">Sample User</Text>
+                                <Text className="text-sm text-gray-600 mt-1">sample@example.com</Text>
                                 <Text className="text-xs text-gray-500 mt-1">Member since March 2024</Text>
                             </View>
 

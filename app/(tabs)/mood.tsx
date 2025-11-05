@@ -158,7 +158,6 @@ const Mood = () => {
 
 
                 <TouchableOpacity
-                    onPress={() => router.push("/(profile)/profile")}
                     className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
                     <Image
                         source={require("@/assets/icons/profile.png")}
