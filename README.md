@@ -7,3 +7,4 @@ Current System Tech Stack:
 -NativeWind
 -Expo Go
 -WebStorm
+-ESLint
