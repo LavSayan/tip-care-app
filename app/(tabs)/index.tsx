@@ -219,11 +219,12 @@ const Index = () => {
                     <View className="bg-[#0077CC] pt-12 flex-row">
                         <View className="p-4">
                             <TouchableOpacity
-                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow"
-                                onPress={() => setModalVisible(false)}>
+                                className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mr-4"
+                                onPress={() => setModalVisible(false)}
+                            >
                                 <Image
                                     source={require("@/assets/icons/close.png")}
-                                    className="w-9 h-9 p-2"
+                                    className="w-6 h-6 mx-3 my-3"
                                     resizeMode="contain"
                                 />
                             </TouchableOpacity>
@@ -242,8 +243,8 @@ const Index = () => {
                                     resizeMode="contain"
                                     tintColor="#0077CC"
                                 />
-                                <Text className="text-2xl font-extrabold text-[#0077CC]">Luis Guirit</Text>
-                                <Text className="text-sm text-gray-600 mt-1">luis@example.com</Text>
+                                <Text className="text-2xl font-extrabold text-[#0077CC]">Sample User</Text>
+                                <Text className="text-sm text-gray-600 mt-1">sample@example.com</Text>
                                 <Text className="text-xs text-gray-500 mt-1">Member since March 2024</Text>
                             </View>
 

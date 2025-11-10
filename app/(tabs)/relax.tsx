@@ -31,7 +31,7 @@ const Relax = () => {
     const soundRef = useRef<Audio.Sound | null>(null);
 
     // circle config
-    const radius = 90;
+    const radius = 120;
     const strokeWidth = 6;
     const diameter = radius * 2;
     const circumference = 2 * Math.PI * radius;
@@ -255,7 +255,6 @@ const Relax = () => {
                 </View>
 
                 <TouchableOpacity
-                    onPress={() => router.push("/(profile)/profile")}
                     className="w-10 h-10 rounded-full bg-white justify-center items-center shadow mt-4">
                     <Image
                         source={require("@/assets/icons/profile.png")}
@@ -303,40 +302,13 @@ const Relax = () => {
                     </Text>
                 </Pressable>
 
-                <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 20 }}>
-                    {/* Circular progress ring (outline) */}
-                    <Svg width={diameter + strokeWidth * 2} height={diameter + strokeWidth * 2}>
-                        <Circle
-                            cx={(diameter + strokeWidth * 2) / 2}
-                            cy={(diameter + strokeWidth * 2) / 2}
-                            r={radius}
-                            stroke="#E0E7EF"
-                            strokeWidth={strokeWidth}
-                            fill="none"
-                        />
-                        <AnimatedCircle
-                            cx={(diameter + strokeWidth * 2) / 2}
-                            cy={(diameter + strokeWidth * 2) / 2}
-                            r={radius}
-                            stroke="#0077CC"
-                            strokeWidth={strokeWidth}
-                            strokeLinecap="round"
-                            fill="none"
-                            strokeDasharray={`${circumference} ${circumference}`}
-                            strokeDashoffset={strokeDashoffset}
-                            rotation="-90"
-                            originX={(diameter + strokeWidth * 2) / 2}
-                            originY={(diameter + strokeWidth * 2) / 2}
-                        />
-                    </Svg>
-
-                    {/* Pulsing outline center (not filled) */}
+                <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 50 }}>
                     <Animated.View
                         style={{
                             position: 'absolute',
-                            width: 160,
-                            height: 160,
-                            borderRadius: 80,
+                            width: 210,
+                            height: 210,
+                            borderRadius: 130,
                             borderWidth: 6,
                             borderColor: '#E6F0FA',
                             justifyContent: 'center',
@@ -348,6 +320,30 @@ const Relax = () => {
                             {breatheText}
                         </Text>
                     </Animated.View>
+                    <Svg width={diameter + strokeWidth * 4} height={diameter + strokeWidth * 4}>
+                        <Circle
+                            cx={(diameter + strokeWidth * 4) / 2}
+                            cy={(diameter + strokeWidth * 4) / 2}
+                            r={radius}
+                            stroke="#E0E7EF"
+                            strokeWidth={strokeWidth}
+                            fill="none"
+                        />
+                        <AnimatedCircle
+                            cx={(diameter + strokeWidth * 4) / 2}
+                            cy={(diameter + strokeWidth * 4) / 2}
+                            r={radius}
+                            stroke="#0077CC"
+                            strokeWidth={strokeWidth}
+                            strokeLinecap="round"
+                            fill="none"
+                            strokeDasharray={`${circumference} ${circumference}`}
+                            strokeDashoffset={strokeDashoffset}
+                            rotation="-90"
+                            originX={(diameter + strokeWidth * 4) / 2}
+                            originY={(diameter + strokeWidth * 4) / 2}
+                        />
+                    </Svg>
                 </View>
 
                 <TouchableOpacity
